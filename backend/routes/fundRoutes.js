@@ -9,17 +9,11 @@ router.get('/search/:queryName', async (req, res) => {
     const { queryName } = req.params;
     console.log(`Backend proxy executing search query for: ${queryName}`);
     const target = `https://mfapi.in{queryName}`;
-    const response = await axios.get(PROXY_WRAP(target), { timeout: 4500 });
-    return res.status(200).json(response.data);
+    const response = await axios.get(PROXY_WRAP(target), { timeout: 6000 });
+    return res.status(200).json(response.data || []);
   } catch (error) {
-    console.warn('Network layer dropped. Compiling dynamic runtime response profiles:', error.message);
-    const cleanToken = String(req.params.queryName).toUpperCase().trim();
-    const dynamicFallbackSet = [
-      { schemeCode: "999101", schemeName: `${cleanToken} Bluechip Advantage Fund - Direct Growth` },
-      { schemeCode: "999102", schemeName: `${cleanToken} Mid-Cap Opportunities Fund - Direct Growth` },
-      { schemeCode: "999103", schemeName: `${cleanToken} Focused Alpha Equity Plan - Institutional Direct` }
-    ];
-    return res.status(200).json(dynamicFallbackSet);
+    console.error('SEARCH ROUTE PROXY EXCEPTION:', error.message);
+    return res.status(200).json([]);
   }
 });
 router.get('/:schemeCode', async (req, res) => {
@@ -31,28 +25,15 @@ router.get('/:schemeCode', async (req, res) => {
   }
   try {
     const target = `https://mfapi.in{schemeCode}`;
-    const response = await axios.get(PROXY_WRAP(target), { timeout: 4500 });
+    const response = await axios.get(PROXY_WRAP(target), { timeout: 6000 });
     if (!response.data || !response.data.data || response.data.data.length === 0) {
-      throw new Error('Malformed API payload data block');
+      return res.status(404).json({ message: 'Scheme data not found or empty response' });
     }
     cacheMap.set(schemeCode, { timestamp: now, data: response.data });
     return res.status(200).json(response.data);
   } catch (error) {
-    console.warn(`Historical data fetch failure for code ${schemeCode}. Computing live math matrices programmatically.`);
-    const dynamicTimelinePoints = [];
-    let runtimeNav = 100.00 + (parseInt(schemeCode) % 100);
-    for (let i = 120; i >= 0; i -= 2) {
-      runtimeNav += (Math.sin(i) * 0.5) + (Math.random() - 0.49) * 1.5;
-      dynamicTimelinePoints.push({ date: `${10 + i}-05-2025`, nav: runtimeNav.toFixed(2) });
-    }
-    return res.status(200).json({
-      meta: { 
-        scheme_name: "Asset Analytical Performance Index", 
-        fund_house: "Automated Distributed Fault-Tolerance Layer", 
-        scheme_category: "Dynamic Index Tracking Profile" 
-      },
-      data: dynamicTimelinePoints
-    });
+    console.error(`Historical data fetch failure for code ${schemeCode}:`, error.message);
+    return res.status(500).json({ message: 'Internal Server Error routing historical details.' });
   }
 });
 export default router;
