@@ -8,74 +8,64 @@ export default function WatchlistPage() {
   const { token } = useContext(AuthContext);
   const fetchWatchlist = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/watchlist`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const targetBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      const res = await axios.get(`${targetBaseUrl}/watchlist`, { 
+        headers: { Authorization: `Bearer ${token}` } 
       });
-      setWatchlist(res.data);
+      setWatchlist(res.data || []);
     } catch (err) {
-      console.error('Error fetching database collections:', err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
   useEffect(() => { 
-    if (token) fetchWatchlist(); 
+    if (token) {
+      fetchWatchlist(); 
+    } else {
+      setLoading(false);
+    }
   }, [token]);
-  const removeScheme = async (code) => {
+  const remove = async (code) => {
     try {
-      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/watchlist/${code}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const targetBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      await axios.delete(`${targetBaseUrl}/watchlist/${code}`, { 
+        headers: { Authorization: `Bearer ${token}` } 
       });
-      setWatchlist(prev => prev.filter(item => item.schemeCode !== code));
+      setWatchlist(prev => prev.filter(i => i.schemeCode !== code));
     } catch (err) {
-      alert('Failed removing targeted items.');
+      alert('Error removing asset');
     }
   };
-  if (loading) return <p style={{ padding: '3rem', textAlign: 'center' }}>Loading your personal tracking watchlist...</p>;
-  if (watchlist.length === 0) {
-    return (
-      <div style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center', padding: '0 1rem' }}>
-        <h2>Your Watchlist is Empty</h2>
-        <p style={{ color: '#64748b', margin: '1rem 0 2rem' }}>Discover funds on the main dashboard to add them to your tracker panel.</p>
-        <Link to="/" style={{ background: '#2563eb', color: '#fff', padding: '0.6rem 1.2rem', borderRadius: '6px', textDecoration: 'none' }}>Search Funds</Link>
-      </div>
-    );
-  }
+  if (loading) return <p style={{ textAlign: 'center', padding: '3rem' }}>Loading Watchlist...</p>;
   return (
-    <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '0 1rem' }}>
-      <h2 style={{ color: '#1e293b', marginBottom: '1.5rem' }}>Your Tracked Mutual Funds Watchlist</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {watchlist.map(item => (
-          <div key={item.schemeCode} style={{ 
+    <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '0 1rem', fontFamily: 'sans-serif' }}>
+      <Link to="/" style={{ textDecoration: 'none', color: '#2563eb' }}>← Back to Search</Link>
+      <h2 style={{ marginTop: '1rem' }}>Your Tracked Watchlist Portfolio</h2>
+      
+      {watchlist.length === 0 ? (
+        <p style={{ marginTop: '1rem', color: '#64748b' }}>Your watchlist is empty.</p>
+      ) : (
+        watchlist.map(i => (
+          <div key={i.schemeCode} style={{ 
             border: '1px solid #e2e8f0', 
             padding: '1.25rem', 
             borderRadius: '8px', 
-            background: '#fff',
+            background: '#fff', 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            marginTop: '1rem',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
           }}>
             <div>
-              <Link to={`/fund/${item.schemeCode}`} style={{ fontWeight: '600', fontSize: '1.1rem', color: '#2563eb', textDecoration: 'none' }}>
-                {item.schemeName}
-              </Link>
-              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>Scheme Code: {item.schemeCode}</div>
+              <Link to={`/fund/${i.schemeCode}`} style={{ fontWeight: '600', color: '#2563eb', textDecoration: 'none' }}>{i.schemeName}</Link>
+              <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.25rem' }}>Code: {i.schemeCode}</div>
             </div>
-            <button onClick={() => removeScheme(item.schemeCode)} style={{ 
-              background: '#ef4444', 
-              color: '#fff', 
-              border: 'none', 
-              padding: '0.5rem 1rem', 
-              borderRadius: '6px', 
-              cursor: 'pointer',
-              fontWeight: '500'
-            }}>
-              Remove
-            </button>
+            <button onClick={() => remove(i.schemeCode)} style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}>Remove</button>
           </div>
-        ))}
-      </div>
+        ))
+      )}
     </div>
   );
-}s
+}
