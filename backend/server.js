@@ -16,7 +16,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/funds', fundRoutes);
 app.use('/api/watchlist', watchlistRoutes);
 const PORT = process.env.PORT || 5000;
-const DB_URI = "mongodb+srv://jainammehta250_db_user:FSfo3Ukli8WWjOup@cluster0.ig6gyfq.mongodb.net/aureva_tracker?retryWrites=true&w=majority&appName=Cluster0";
+const DB_URI = process.env.MONGO_URI;
 mongoose.connection.on('connected', () => {
   console.log('Successfully connected to MongoDB Atlas (aureva_tracker)');
 });

@@ -14,7 +14,7 @@ export default function Home() {
     const delayDebounce = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/funds/search/${query}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/funds/search/${query}`);
         const finalArray = Array.isArray(res.data) ? res.data : (res.data?.data || []);
         setResults(finalArray.slice(0, 20));
       } catch (err) {
@@ -33,7 +33,7 @@ export default function Home() {
     }
     try {
       await axios.post(
-        'http://localhost:5000/api/watchlist', 
+        `${import.meta.env.VITE_API_BASE_URL}/watchlist`,
         { schemeCode: String(schemeCode), schemeName }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -14,7 +14,7 @@ export default function FundDetail() {
     const fetchDetails = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/api/funds/${schemeCode}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/funds/${schemeCode}`);
         setMeta(res.data.meta);
         const parsed = (res.data.data || []).map(item => {
           const [d, m, y] = item.date.split('-');
