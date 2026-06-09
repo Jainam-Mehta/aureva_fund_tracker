@@ -31,6 +31,7 @@ router.get('/:schemeCode', async (req, res) => {
   try {
     const target = `https://mfapi.in{schemeCode}`;
     const response = await axios.get(PROXY_WRAP(target), { timeout: 8000 });
+
     let parsedData = response.data;
     if (typeof parsedData === 'string') {
       parsedData = JSON.parse(parsedData);
