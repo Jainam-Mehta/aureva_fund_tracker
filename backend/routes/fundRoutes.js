@@ -9,8 +9,13 @@ router.get('/search/:queryName', async (req, res) => {
     const { queryName } = req.params;
     console.log(`Backend proxy executing search query for: ${queryName}`);
     const target = `https://mfapi.in{queryName}`;
-    const response = await axios.get(PROXY_WRAP(target), { timeout: 6000 });
-    return res.status(200).json(response.data || []);
+    const response = await axios.get(PROXY_WRAP(target), { timeout: 8000 });
+    let parsedData = response.data;
+    if (typeof parsedData === 'string') {
+      parsedData = JSON.parse(parsedData);
+    }
+    const finalArray = Array.isArray(parsedData) ? parsedData : (parsedData?.data || []);
+    return res.status(200).json(finalArray);
   } catch (error) {
     console.error('SEARCH ROUTE PROXY EXCEPTION:', error.message);
     return res.status(200).json([]);
@@ -25,12 +30,16 @@ router.get('/:schemeCode', async (req, res) => {
   }
   try {
     const target = `https://mfapi.in{schemeCode}`;
-    const response = await axios.get(PROXY_WRAP(target), { timeout: 6000 });
-    if (!response.data || !response.data.data || response.data.data.length === 0) {
+    const response = await axios.get(PROXY_WRAP(target), { timeout: 8000 });
+    let parsedData = response.data;
+    if (typeof parsedData === 'string') {
+      parsedData = JSON.parse(parsedData);
+    }
+    if (!parsedData || !parsedData.data || parsedData.data.length === 0) {
       return res.status(404).json({ message: 'Scheme data not found or empty response' });
     }
-    cacheMap.set(schemeCode, { timestamp: now, data: response.data });
-    return res.status(200).json(response.data);
+    cacheMap.set(schemeCode, { timestamp: now, data: parsedData });
+    return res.status(200).json(parsedData);
   } catch (error) {
     console.error(`Historical data fetch failure for code ${schemeCode}:`, error.message);
     return res.status(500).json({ message: 'Internal Server Error routing historical details.' });
