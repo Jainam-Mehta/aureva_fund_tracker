@@ -1,19 +1,16 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-
 export default function Home() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const { token, isAuthenticated } = useContext(AuthContext);
-
   useEffect(() => {
     if (!query.trim()) { 
       setResults([]); 
       return; 
     }
-
     const delayDebounce = setTimeout(async () => {
       setLoading(true);
       try {
@@ -27,10 +24,8 @@ export default function Home() {
         setLoading(false);
       }
     }, 400);
-
     return () => clearTimeout(delayDebounce);
   }, [query]);
-
   const addToWatchlist = async (schemeCode, schemeName) => {
     if (!isAuthenticated) {
       alert('Please log in first to save mutual funds to your personal watchlist.');
@@ -47,12 +42,10 @@ export default function Home() {
       alert(err.response?.data?.message || 'Error saving to watchlist.');
     }
   };
-
   return (
     <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '0 1rem', fontFamily: 'sans-serif' }}>
       <h1 style={{ color: '#1e293b', marginBottom: '0.5rem' }}>Discover Indian Mutual Funds</h1>
       <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>Search for any asset and save it directly to your tracker watchlist.</p>
-      
       <input 
         type="text" 
         placeholder="Type to search e.g., SBI, HDFC, Nippon..." 
@@ -62,13 +55,10 @@ export default function Home() {
           width: '100%', padding: '1rem', fontSize: '1rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', marginBottom: '2rem'
         }}
       />
-
       {loading && <p style={{ textAlign: 'center', color: '#2563eb' }}>Searching matching schemes...</p>}
-
       {!loading && query && results.length === 0 && (
         <p style={{ textAlign: 'center', color: '#64748b' }}>No mutual funds found for "{query}"</p>
       )}
-
       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {results.map(fund => (
           <li key={fund.schemeCode} style={{ 

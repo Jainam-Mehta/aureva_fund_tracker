@@ -2,12 +2,10 @@ import { useEffect, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-
 export default function WatchlistPage() {
   const [watchlist, setWatchlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const { token } = useContext(AuthContext);
-
   const fetchWatchlist = async () => {
     try {
       const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/watchlist`, {
@@ -20,11 +18,9 @@ export default function WatchlistPage() {
       setLoading(false);
     }
   };
-
   useEffect(() => { 
     if (token) fetchWatchlist(); 
   }, [token]);
-
   const removeScheme = async (code) => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/watchlist/${code}`, {
@@ -35,9 +31,7 @@ export default function WatchlistPage() {
       alert('Failed removing targeted items.');
     }
   };
-
   if (loading) return <p style={{ padding: '3rem', textAlign: 'center' }}>Loading your personal tracking watchlist...</p>;
-  
   if (watchlist.length === 0) {
     return (
       <div style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center', padding: '0 1rem' }}>
@@ -47,7 +41,6 @@ export default function WatchlistPage() {
       </div>
     );
   }
-
   return (
     <div style={{ maxWidth: '800px', margin: '2rem auto', padding: '0 1rem' }}>
       <h2 style={{ color: '#1e293b', marginBottom: '1.5rem' }}>Your Tracked Mutual Funds Watchlist</h2>

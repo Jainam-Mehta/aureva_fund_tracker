@@ -5,7 +5,6 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import WatchlistPage from './pages/WatchlistPage';
 import FundDetail from './pages/FundDetail';
-
 export default function App() {
   return (
     <AuthProvider>

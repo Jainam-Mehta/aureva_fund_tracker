@@ -1,16 +1,13 @@
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-
 export default function Navbar() {
   const { isAuthenticated, userEmail, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
-
   return (
     <nav style={{ 
       display: 'flex', 

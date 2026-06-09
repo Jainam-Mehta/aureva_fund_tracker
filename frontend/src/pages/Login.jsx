@@ -2,7 +2,6 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
-
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
@@ -10,12 +9,10 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(false);
     const endpoint = isRegister ? 'register' : 'login';
-    
     try {
       setLoading(true);
       const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/${endpoint}`, { email, password });
@@ -27,7 +24,6 @@ export default function Login() {
       setLoading(false);
     }
   };
-
   return (
     <div style={{ maxWidth: '400px', margin: '6rem auto', padding: '2rem', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
       <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>{isRegister ? 'Create Account' : 'Sign In'}</h2>

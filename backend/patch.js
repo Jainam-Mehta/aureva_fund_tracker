@@ -1,12 +1,9 @@
 import fs from 'fs';
-
 const cleanRouteCode = `import express from 'express';
 import axios from 'axios';
-
 const router = express.Router();
 const cacheMap = new Map();
 const CACHE_DURATION_MS = 60 * 60 * 1000;
-
 router.get('/search/:queryName', async (req, res) => {
   try {
     const { queryName } = req.params;
@@ -18,7 +15,6 @@ router.get('/search/:queryName', async (req, res) => {
     return res.status(500).json({ message: 'Internal Server Error routing proxy search.' });
   }
 });
-
 router.get('/:schemeCode', async (req, res) => {
   try {
     const { schemeCode } = req.params;
@@ -35,8 +31,6 @@ router.get('/:schemeCode', async (req, res) => {
     return res.status(500).json({ message: 'Internal Server Error routing historical details.' });
   }
 });
-
 export default router;`;
-
 fs.writeFileSync('routes/fundRoutes.js', cleanRouteCode);
-console.log('--- FUNDROUTES.JS SUCCESSFULLY OVERWRITTEN ---');
+console.log('FUNDROUTES.JS SUCCESSFULLY OVERWRITTEN');
